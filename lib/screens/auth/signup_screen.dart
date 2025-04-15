@@ -64,24 +64,45 @@ class _SignupScreenState extends State<SignupScreen> {
               ),
               const SizedBox(height: 20.0),
               ElevatedButton(
-                child: loading
-                    ? const CircularProgressIndicator(color: Colors.white)
-                    : const Text('Register'),
                 onPressed: loading
                     ? null
                     : () async {
                         if (_formKey.currentState!.validate()) {
                           setState(() => loading = true);
-                          dynamic result = await _auth
-                              .registerWithEmailAndPassword(email, password);
-                          if (result == null) {
+                          try {
+                            dynamic result = await _auth
+                                .registerWithEmailAndPassword(email, password);
+                            if (result == null) {
+                              setState(() {
+                                error = 'Please supply a valid email';
+                                loading = false;
+                              });
+                            }
+                          } catch (e) {
                             setState(() {
-                              error = 'Please supply a valid email';
+                              if (e
+                                  .toString()
+                                  .contains('email-already-in-use')) {
+                                error = 'This email is already registered';
+                              } else if (e
+                                  .toString()
+                                  .contains('invalid-email')) {
+                                error = 'Please enter a valid email format';
+                              } else if (e
+                                  .toString()
+                                  .contains('weak-password')) {
+                                error = 'Password is too weak';
+                              } else {
+                                error = 'Registration failed: ${e.toString()}';
+                              }
                               loading = false;
                             });
                           }
                         }
                       },
+                child: loading
+                    ? const CircularProgressIndicator(color: Colors.white)
+                    : const Text('Register'),
               ),
               const SizedBox(height: 12.0),
               Text(

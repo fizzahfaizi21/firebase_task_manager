@@ -8,14 +8,16 @@ class DatabaseService {
 
   DatabaseService({required this.uid});
 
-  // Create a new task
+  // Create a new task - Fixed return type
   Future<void> addTask(Task task) async {
-    return await taskCollection.add(task.toMap());
+    await taskCollection.add(task.toMap());
+    return;
   }
 
   // Update a task
   Future<void> updateTask(Task task) async {
-    return await taskCollection.doc(task.id).update(task.toMap());
+    await taskCollection.doc(task.id).update(task.toMap());
+    return;
   }
 
   // Delete a task
@@ -35,7 +37,8 @@ class DatabaseService {
     batch.delete(taskCollection.doc(taskId));
 
     // Commit the batch
-    return await batch.commit();
+    await batch.commit();
+    return;
   }
 
   // Get user tasks stream

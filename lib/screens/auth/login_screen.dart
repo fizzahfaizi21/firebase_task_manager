@@ -65,25 +65,44 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
               const SizedBox(height: 20.0),
               ElevatedButton(
-                child: loading
-                    ? const CircularProgressIndicator(color: Colors.white)
-                    : const Text('Sign In'),
                 onPressed: loading
                     ? null
                     : () async {
                         if (_formKey.currentState!.validate()) {
                           setState(() => loading = true);
-                          dynamic result = await _auth
-                              .signInWithEmailAndPassword(email, password);
-                          if (result == null) {
+                          try {
+                            dynamic result = await _auth
+                                .signInWithEmailAndPassword(email, password);
+                            if (result == null) {
+                              setState(() {
+                                error =
+                                    'Could not sign in with those credentials';
+                                loading = false;
+                              });
+                            }
+                          } catch (e) {
                             setState(() {
-                              error =
-                                  'Could not sign in with those credentials';
+                              if (e.toString().contains('user-not-found')) {
+                                error = 'No user found with this email';
+                              } else if (e
+                                  .toString()
+                                  .contains('wrong-password')) {
+                                error = 'Incorrect password';
+                              } else if (e
+                                  .toString()
+                                  .contains('invalid-email')) {
+                                error = 'Please enter a valid email format';
+                              } else {
+                                error = 'Login failed: ${e.toString()}';
+                              }
                               loading = false;
                             });
                           }
                         }
                       },
+                child: loading
+                    ? const CircularProgressIndicator(color: Colors.white)
+                    : const Text('Sign In'),
               ),
               const SizedBox(height: 12.0),
               Text(

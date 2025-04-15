@@ -18,7 +18,8 @@ class AuthService {
       return result.user;
     } catch (e) {
       print(e.toString());
-      return null;
+      // Rethrow the error so it can be caught and handled by the UI
+      throw e;
     }
   }
 
@@ -31,7 +32,8 @@ class AuthService {
       return result.user;
     } catch (e) {
       print(e.toString());
-      return null;
+      // Rethrow the error so it can be caught and handled by the UI
+      throw e;
     }
   }
 
@@ -41,6 +43,7 @@ class AuthService {
       return await _auth.signOut();
     } catch (e) {
       print(e.toString());
+      throw e;
     }
   }
 }
